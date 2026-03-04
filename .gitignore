@@ -1,0 +1,18 @@
+# 输出和临时文件
+Output/
+Tmp/
+Logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# 环境配置
+.env.local

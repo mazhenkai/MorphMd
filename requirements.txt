@@ -1,0 +1,11 @@
+# Markdown 解析
+markdown2
+
+# PDF 转换 (Chromium)
+playwright
+
+# PDF 转换 (wkhtmltopdf, 可选)
+pdfkit
+
+# DOCX 转换
+pypandoc
