@@ -182,6 +182,6 @@ def batch_convert(input_dir, format="html", output_dir=None):
 
 
 # 版本信息
-__version__ = "1.0.0"
-__author__ = "Claude"
+__version__ = "0.0.1"
+__author__ = "Zhenkai Ma"
 __all__ = ['convert', 'batch_convert', 'config']

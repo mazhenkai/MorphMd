@@ -2,13 +2,19 @@
 
 将 Markdown 文件转换为 HTML、PDF 或 DOCX 格式，完美支持彩色 Emoji。
 
+📖 **[项目文档](Docs/README.md)** | [使用指南](Docs/usage.md) | [示例](Docs/examples.md) | [更新日志](Docs/CHANGELOG.md)
+
 ## 快速开始
 
 ### 1. 配置环境
 
 ```bash
-# 复制配置文件模板
+# Windows
+copy .env.example .env
+
+# macOS / Linux
 cp .env.example .env
+
 # 根据需要修改 .env 中的配置
 ```
 
@@ -95,6 +101,20 @@ python main.py Tests -f html
 # 转换为 Word 文档
 python main.py Samples/test.md -f docx
 ```
+
+## 联系方式
+
+如果这个项目对你有帮助，欢迎：
+
+- 📧 **邮箱**: ma.zhenkai@foxmail.com
+- 💬 **微信**: 扫码加好友交流，报bug或者纯交个朋友都行，加好友麻烦备注MorphMd
+
+<img src="assets/微信二维码.jpg" width="200" alt="微信二维码">
+
+- ☕ **赞赏支持**:
+- 💬 哈哈，无最低和最高限额，也不强制，纯图一乐
+
+<img src="assets/支付宝收款码.jpg" width="200" alt="支付宝收款码">
 
 ## License
 
