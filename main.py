@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 MorphMd - Markdown 转换工具
-支持命令行和批处理模式
+所有文件必须在 Input/ 目录下
 """
 
 import argparse
@@ -71,40 +71,57 @@ def batch_convert(input_dir, output_dir, format_type, logger):
 
 def main():
     parser = argparse.ArgumentParser(description='MorphMd - Markdown 转换工具')
-    parser.add_argument('--input', '-i', help='输入文件或目录')
-    parser.add_argument('--output', '-o', help='输出目录')
+    parser.add_argument('path', nargs='?', help='Input目录下的文件或文件夹名（相对路径）')
     parser.add_argument('--format', '-f', choices=['html', 'pdf', 'docx'],
                        default='pdf', help='输出格式 (默认: pdf)')
-    parser.add_argument('--batch', '-b', action='store_true',
-                       help='批量处理模式')
 
     args = parser.parse_args()
 
     # 设置日志
     logger = setup_logger()
-
-    # 加载配置
     config = Config()
-
-    # 确定输入输出目录
-    input_path = args.input or config.get('INPUT_DIR', 'Input')
-    output_path = args.output or config.get('OUTPUT_DIR', f'Output/{args.format}')
-
-    ensure_dir(output_path)
 
     logger.info("=" * 60)
     logger.info("MorphMd - Markdown 转换工具")
     logger.info("=" * 60)
 
-    # 判断是文件还是目录
-    path = Path(input_path)
+    # 确定输入路径（必须在 Input 目录下）
+    input_base = Path("Input")
 
-    if path.is_file():
-        convert_file(input_path, output_path, args.format, logger)
-    elif path.is_dir():
-        batch_convert(input_path, output_path, args.format, logger)
-    else:
+    if not args.path:
+        logger.error("请指定 Input 目录下的文件或文件夹")
+        logger.info("示例: python main.py test.md -f pdf")
+        logger.info("示例: python main.py subfolder -f html")
+        sys.exit(1)
+
+    input_path = input_base / args.path
+
+    if not input_path.exists():
         logger.error(f"路径不存在: {input_path}")
+        sys.exit(1)
+
+    # 输出目录 - 保持相同的子目录结构
+    # Input/Samples/test.md -> Output/pdf/Samples/test.pdf
+    # Input/Tests -> Output/pdf/Tests
+    relative_path = Path(args.path)
+    if input_path.is_file():
+        # 文件：Output/{format}/{parent_dir}/
+        output_dir = Path("Output") / args.format / relative_path.parent
+    else:
+        # 目录：Output/{format}/{dir_name}/
+        output_dir = Path("Output") / args.format / relative_path
+
+    ensure_dir(output_dir)
+
+    # 判断是文件还是目录
+    if input_path.is_file():
+        # 单文件转换
+        convert_file(input_path, output_dir, args.format, logger)
+    elif input_path.is_dir():
+        # 批量转换
+        batch_convert(input_path, output_dir, args.format, logger)
+    else:
+        logger.error(f"无效路径: {input_path}")
         sys.exit(1)
 
 

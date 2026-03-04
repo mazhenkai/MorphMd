@@ -19,31 +19,75 @@ playwright install chromium
 
 ### 2. 使用方法
 
+**所有待转换文件必须放在 `Input/` 目录下**
+
 ```bash
-# 转换单个文件到 Tmp 目录（调试）
-python main.py -i test.md -o Tmp -f pdf
+# 转换单个文件
+python main.py Samples/test.md -f pdf
+# 输出: Output/pdf/Samples/test.pdf
 
-# 批量转换 Input 目录所有文件
-python main.py -i Input -o Output/pdf -f pdf
+# 批量转换文件夹
+python main.py Samples -f html
+# 输出: Output/html/Samples/*.html
 
-# 使用默认配置（Input -> Output）
-python main.py -f html
+# 转换为 DOCX
+python main.py Tests/sample.md -f docx
+# 输出: Output/docx/Tests/sample.docx
 ```
 
-## 目录说明
+## 目录结构
 
-- `Input/` - 放置待转换的 .md 文件
-- `Output/` - 转换结果（按格式分类）
-- `Tmp/` - 临时文件和调试输出
-- `Logs/` - 转换日志
-- `Docs/` - 项目文档
-- `Tests/` - 测试用例
-- `core/` - 核心转换代码
+```
+MorphMd/
+├── Input/              # 输入目录（放置待转换的 .md 文件）
+│   ├── Tests/         # 测试文件
+│   └── Samples/       # 样例文件
+│
+├── Output/            # 输出目录（按格式自动分类）
+│   ├── html/
+│   │   ├── Tests/
+│   │   └── Samples/
+│   ├── pdf/
+│   │   ├── Tests/
+│   │   └── Samples/
+│   └── docx/
+│       ├── Tests/
+│       └── Samples/
+│
+├── Tmp/               # 临时文件
+├── Logs/              # 转换日志
+├── Docs/              # 项目文档
+└── core/              # 核心转换代码
+```
 
 ## 支持格式
 
 - **HTML** - 在线查看，交互式导航
-- **PDF** - 正式文档，完美支持彩色 emoji
+- **PDF** - 正式文档，完美支持彩色 emoji (Chromium)
 - **DOCX** - Word 文档，可编辑
 
-更多详情请查看 `Docs/usage.md`
+## 命令参数
+
+```bash
+python main.py <路径> -f <格式>
+```
+
+- `<路径>`: Input 目录下的文件或文件夹（相对路径）
+- `-f, --format`: 输出格式，可选 `html`, `pdf`, `docx`（默认: pdf）
+
+## 示例
+
+```bash
+# 转换单个样例文件为 PDF
+python main.py Samples/test.md -f pdf
+
+# 批量转换所有测试文件为 HTML
+python main.py Tests -f html
+
+# 转换为 Word 文档
+python main.py Samples/test.md -f docx
+```
+
+## License
+
+MIT License - 详见 [LICENSE](LICENSE)
