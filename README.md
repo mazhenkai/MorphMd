@@ -4,7 +4,15 @@
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 配置环境
+
+```bash
+# 复制配置文件模板
+cp .env.example .env
+# 根据需要修改 .env 中的配置
+```
+
+### 2. 安装依赖
 
 ```bash
 pip install -r requirements.txt
@@ -17,7 +25,7 @@ playwright install chromium
 # 或访问: https://pandoc.org/installing.html
 ```
 
-### 2. 使用方法
+### 3. 使用方法
 
 **所有待转换文件必须放在 `Input/` 目录下**
 
