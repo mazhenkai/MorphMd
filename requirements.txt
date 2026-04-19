@@ -12,3 +12,6 @@ pypandoc
 
 # PDF 合并（封面功能）
 pypdf
+
+# 页码添加
+reportlab

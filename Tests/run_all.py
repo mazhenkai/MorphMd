@@ -18,8 +18,9 @@ from test_html import test_html_conversion
 from test_pdf import test_pdf_conversion
 from test_pdf_merge import test_pdf_merge
 from test_add_cover import test_add_cover
+from test_page_number import test_add_page_numbers
 
-TESTS = [test_html_conversion, test_pdf_conversion, test_pdf_merge, test_add_cover]
+TESTS = [test_html_conversion, test_pdf_conversion, test_pdf_merge, test_add_cover, test_add_page_numbers]
 
 if __name__ == "__main__":
     passed = failed = 0

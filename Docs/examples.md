@@ -40,6 +40,9 @@ python Bin/merge_convert.py Samples --name 技术文档合集
 ```bash
 # 为 PDF 添加封面，输出为 *_covered.pdf
 python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf
+
+# 添加封面 + 页码（封面页不计入页码）
+python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf -p
 ```
 
 ## 配置文件

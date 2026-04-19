@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.2.1 (2026-04-19)
+
+#### 新功能
+- `add_cover.py` 新增 `--page-number / -p` 参数，封面后各页自动加页码
+- 新增 `Tests/test_page_number.py` 页码功能测试
+
+#### 改进
+- `requirements.txt` 新增 `reportlab` 依赖
+- `Docs/examples.md` 补充页码用例
+
+---
+
 ## v0.2.0 (2026-04-19)
 
 #### 新功能

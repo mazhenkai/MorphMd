@@ -31,19 +31,15 @@
 ## 最新更新
 
 <!-- CHANGELOG_LATEST_START -->
-## v0.2.0 (2026-04-19)
+## v0.2.1 (2026-04-19)
 
 #### 新功能
-- 入口拆分为 `Bin/convert.py`、`Bin/merge_convert.py`、`Bin/add_cover.py`
-- 新增多 md 合并为单 PDF 功能（含目录页）
-- 新增封面模板系统（md 模板 + json 数据，`{{占位符}}` 渲染）
-- 新增 `Config/settings.json` 全局配置
-- `.env` 迁移至 `Config/` 目录
+- `add_cover.py` 新增 `--page-number / -p` 参数，封面后各页自动加页码
+- 新增 `Tests/test_page_number.py` 页码功能测试
 
 #### 改进
-- 所有入口支持从任意目录运行（基于 ROOT 路径定位）
-- `gitignore` 新增 `SelfRunningFiles/` 全局忽略
-- 新增 `Template/Cover/Samples/` 封面示例
+- `requirements.txt` 新增 `reportlab` 依赖
+- `Docs/examples.md` 补充页码用例
 
 ---
 <!-- CHANGELOG_LATEST_END -->
