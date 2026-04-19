@@ -2,7 +2,51 @@
 
 将 Markdown 文件转换为 HTML、PDF 或 DOCX 格式，完美支持彩色 Emoji。
 
-📖 **[项目文档](Docs/README.md)** | [使用指南](Docs/usage.md) | [示例](Docs/examples.md) | [更新日志](Docs/CHANGELOG.md)
+📖 **[项目文档](Docs/cover.md)** | [使用指南](Docs/usage.md) | [示例](Docs/examples.md) | [更新日志](Docs/CHANGELOG.md)
+
+<!-- COVER_START -->
+# 项目文档
+
+## 项目初衷
+
+我在用claude开发生成项目markdown时候，很多时候需要给非技术背景的人提供pdf或者word，亦或是一个html小型的静态文档网站，市面上符合我想用的功能的比较少。就用python自己开发了一个，本来在那个项目中想着临时使用，没想到变成了一个使用频次颇高的模块，因此这里开源出来，大家一起交个朋友。我自己也会使用，不定期更新，希望能兼职维护这个项目。
+
+## 开发环境
+
+- **操作系统**: Windows (开发和测试环境)
+- **Python**: 3.12+
+- **跨平台**: 理论上支持 macOS 和 Linux，但未经充分测试
+
+> 如果你在 macOS 或 Linux 上使用遇到问题，欢迎提 Issue 或 PR！
+
+## 目录
+
+
+
+- [使用指南](usage.md) - 详细的使用文档
+- [示例](examples.md) - 使用示例
+- [更新日志](CHANGELOG.md) - 版本说明和开发计划
+<!-- COVER_END -->
+
+## 最新更新
+
+<!-- CHANGELOG_LATEST_START -->
+## v0.2.0 (2026-04-19)
+
+#### 新功能
+- 入口拆分为 `Bin/convert.py`、`Bin/merge_convert.py`、`Bin/add_cover.py`
+- 新增多 md 合并为单 PDF 功能（含目录页）
+- 新增封面模板系统（md 模板 + json 数据，`{{占位符}}` 渲染）
+- 新增 `Config/settings.json` 全局配置
+- `.env` 迁移至 `Config/` 目录
+
+#### 改进
+- 所有入口支持从任意目录运行（基于 ROOT 路径定位）
+- `gitignore` 新增 `SelfRunningFiles/` 全局忽略
+- 新增 `Template/Cover/Samples/` 封面示例
+
+---
+<!-- CHANGELOG_LATEST_END -->
 
 ## 快速开始
 
@@ -10,12 +54,10 @@
 
 ```bash
 # Windows
-copy .env.example .env
+copy Config\.env.example Config\.env
 
 # macOS / Linux
-cp .env.example .env
-
-# 根据需要修改 .env 中的配置
+cp Config/.env.example Config/.env
 ```
 
 ### 2. 安装依赖
@@ -37,37 +79,50 @@ playwright install chromium
 
 ```bash
 # 转换单个文件
-python main.py Samples/test.md -f pdf
+python Bin/convert.py Samples/test.md -f pdf
 # 输出: Output/pdf/Samples/test.pdf
 
 # 批量转换文件夹
-python main.py Samples -f html
+python Bin/convert.py Samples -f html
 # 输出: Output/html/Samples/*.html
 
-# 转换为 DOCX
-python main.py Tests/sample.md -f docx
-# 输出: Output/docx/Tests/sample.docx
+# 合并目录下所有 md 为一个 PDF
+python Bin/merge_convert.py Samples
+# 输出: Output/pdf/Samples/Samples.pdf
+
+# 为 PDF 添加封面
+python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf
+# 输出: Output/pdf/Samples/Samples_covered.pdf
 ```
 
 ## 目录结构
 
 ```
 MorphMd/
-├── Input/              # 输入目录（放置待转换的 .md 文件）
-│   ├── Tests/         # 测试文件
-│   └── Samples/       # 样例文件
+├── Bin/               # 入口脚本
+│   ├── convert.py     # 单文件/批量转换
+│   ├── merge_convert.py # 合并多 md 为一个 PDF
+│   └── add_cover.py   # 添加封面
+│
+├── Config/            # 配置文件
+│   ├── .env           # 环境配置（本地，不提交）
+│   ├── .env.example   # 配置示例
+│   └── settings.json  # 全局设置
+│
+├── Input/             # 输入目录（放置待转换的 .md 文件）
+│   ├── Tests/
+│   └── Samples/
 │
 ├── Output/            # 输出目录（按格式自动分类）
 │   ├── html/
-│   │   ├── Tests/
-│   │   └── Samples/
 │   ├── pdf/
-│   │   ├── Tests/
-│   │   └── Samples/
 │   └── docx/
-│       ├── Tests/
-│       └── Samples/
 │
+├── Template/          # 模板目录
+│   └── Cover/         # 封面模板
+│       └── Samples/   # 示例封面
+│
+├── Tests/             # 测试代码
 ├── Tmp/               # 临时文件
 ├── Logs/              # 转换日志
 ├── Docs/              # 项目文档
@@ -83,23 +138,30 @@ MorphMd/
 ## 命令参数
 
 ```bash
-python main.py <路径> -f <格式>
-```
+# 单文件或批量转换
+python Bin/convert.py <路径> -f <格式>
 
-- `<路径>`: Input 目录下的文件或文件夹（相对路径）
-- `-f, --format`: 输出格式，可选 `html`, `pdf`, `docx`（默认: pdf）
+# 合并为一个 PDF
+python Bin/merge_convert.py <目录> [--name <输出文件名>]
+
+# 添加封面
+python Bin/add_cover.py <封面md> <内容pdf>
+```
 
 ## 示例
 
 ```bash
 # 转换单个样例文件为 PDF
-python main.py Samples/test.md -f pdf
+python Bin/convert.py Samples/test.md -f pdf
 
 # 批量转换所有测试文件为 HTML
-python main.py Tests -f html
+python Bin/convert.py Tests -f html
 
-# 转换为 Word 文档
-python main.py Samples/test.md -f docx
+# 合并技术文档为一个 PDF
+python Bin/merge_convert.py Samples
+
+# 添加封面
+python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf
 ```
 
 ## 联系方式

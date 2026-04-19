@@ -365,6 +365,87 @@ class MarkdownToPdfConverter:
         print("=" * 80)
 
 
+    def convert_merged(self, output_filename=None):
+        """将目录下所有 Markdown 文件合并为一个 PDF，包含目录页"""
+        md_files = sorted(self.input_dir.glob("*.md"))
+
+        if not md_files:
+            print(f"[WARNING] 在 {self.input_dir} 中没有找到Markdown文件")
+            return False
+
+        if output_filename is None:
+            output_filename = self.input_dir.name
+
+        print(f"找到 {len(md_files)} 个文件，合并为: {output_filename}.pdf")
+
+        # 生成目录 HTML
+        toc_items = "".join(
+            f'<li><a href="#section-{i}">{md_file.stem}</a></li>'
+            for i, md_file in enumerate(md_files)
+        )
+        toc_html = f"""
+        <div class="toc">
+            <h1>目录</h1>
+            <ol>{toc_items}</ol>
+        </div>
+        <div style="page-break-after: always"></div>
+        """
+
+        # 合并所有 md 内容
+        sections = []
+        for i, md_file in enumerate(md_files):
+            print(f"  [{i+1}/{len(md_files)}] {md_file.name}")
+            with open(md_file, 'r', encoding='utf-8') as f:
+                md_content = f.read()
+            html_body = markdown2.markdown(
+                md_content,
+                extras=['tables', 'fenced-code-blocks', 'code-friendly', 'break-on-newline', 'header-ids']
+            )
+            sections.append(f'<div id="section-{i}" class="section">{html_body}</div>')
+
+        sections_html = '<div style="page-break-after: always"></div>'.join(sections)
+
+        toc_css = """
+        <style>
+            .toc { padding: 40px 0; }
+            .toc h1 { font-size: 28pt; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+            .toc ol { font-size: 13pt; line-height: 2; }
+            .toc a { color: #3498db; text-decoration: none; }
+        </style>
+        """
+
+        full_html = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{output_filename}</title>
+    {self.css_style}
+    {toc_css}
+</head>
+<body>
+    {toc_html}
+    {sections_html}
+</body>
+</html>"""
+
+        pdf_file = self.output_dir / f"{output_filename}.pdf"
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            page = browser.new_page()
+            page.set_content(full_html, wait_until='networkidle')
+            page.pdf(
+                path=str(pdf_file),
+                format='A4',
+                margin={'top': '15mm', 'right': '15mm', 'bottom': '15mm', 'left': '15mm'},
+                print_background=True,
+            )
+            browser.close()
+
+        print(f"[OK] 合并完成: {pdf_file}")
+        return True
+
+
 def main():
     """主函数"""
     import argparse

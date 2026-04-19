@@ -9,3 +9,6 @@ pdfkit
 
 # DOCX 转换
 pypandoc
+
+# PDF 合并（封面功能）
+pypdf

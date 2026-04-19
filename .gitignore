@@ -60,3 +60,6 @@ Output/docx/Samples/*
 !Output/pdf/Samples/.gitkeep
 !Output/docx/Tests/.gitkeep
 !Output/docx/Samples/.gitkeep
+
+# SelfRunningFiles - 所有位置均不上传
+**/SelfRunningFiles/

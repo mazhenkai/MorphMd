@@ -21,7 +21,7 @@ class Config:
         """
         if env_file is None:
             # .env 在项目根目录
-            env_file = Path(__file__).parent.parent / '.env'
+            env_file = Path(__file__).parent.parent / 'Config' / '.env'
 
         self.env_file = Path(env_file)
         self._config = {}

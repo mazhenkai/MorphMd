@@ -14,6 +14,24 @@
 
 ## 目录
 
+<!-- CHANGELOG_LATEST_START -->
+## v0.2.0 (2026-04-19)
+
+#### 新功能
+- 入口拆分为 `Bin/convert.py`、`Bin/merge_convert.py`、`Bin/add_cover.py`
+- 新增多 md 合并为单 PDF 功能（含目录页）
+- 新增封面模板系统（md 模板 + json 数据，`{{占位符}}` 渲染）
+- 新增 `Config/settings.json` 全局配置
+- `.env` 迁移至 `Config/` 目录
+
+#### 改进
+- 所有入口支持从任意目录运行（基于 ROOT 路径定位）
+- `gitignore` 新增 `SelfRunningFiles/` 全局忽略
+- 新增 `Template/Cover/Samples/` 封面示例
+
+---
+<!-- CHANGELOG_LATEST_END -->
+
 - [使用指南](usage.md) - 详细的使用文档
 - [示例](examples.md) - 使用示例
 - [更新日志](CHANGELOG.md) - 版本说明和开发计划

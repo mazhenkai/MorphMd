@@ -6,46 +6,40 @@
 
 ```bash
 # 转换为 PDF（默认格式）
-python main.py -i Input/test.md -o Output/pdf
+python Bin/convert.py Samples/test.md -f pdf
 
 # 转换为 HTML
-python main.py -i Input/test.md -o Output/html -f html
+python Bin/convert.py Samples/test.md -f html
 
 # 转换为 DOCX
-python main.py -i Input/test.md -o Output/docx -f docx
+python Bin/convert.py Samples/test.md -f docx
 ```
 
 ### 2. 批量转换目录
 
 ```bash
-# 批量转换 Input 目录所有 .md 文件为 PDF
-python main.py -i Input -o Output/pdf -f pdf
+# 批量转换 Input/Samples 目录所有 .md 文件为 PDF
+python Bin/convert.py Samples -f pdf
 
 # 批量转换为 HTML
-python main.py -i Input -o Output/html -f html
+python Bin/convert.py Samples -f html
 ```
 
-### 3. 快速调试（使用 Tmp 目录）
+### 3. 合并为一个 PDF
 
 ```bash
-# 单文件快速测试
-python main.py -i test.md -o Tmp -f pdf
+# 合并目录下所有 md 为一个 PDF（文件名默认用目录名）
+python Bin/merge_convert.py Samples
 
-# 查看结果
-ls Tmp/
+# 自定义输出文件名
+python Bin/merge_convert.py Samples --name 技术文档合集
 ```
 
-## 作为 Python 模块使用
+### 4. 添加封面
 
-```python
-from core import convert, batch_convert
-
-# 转换单个文件
-convert("Input/test.md", format="pdf", output_dir="Output/pdf")
-
-# 批量转换
-results = batch_convert("Input", format="html", output_dir="Output/html")
-print(f"成功: {len(results['success'])}, 失败: {len(results['failed'])}")
+```bash
+# 为 PDF 添加封面，输出为 *_covered.pdf
+python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf
 ```
 
 ## 配置文件
