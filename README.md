@@ -23,8 +23,8 @@
 
 
 
-- [使用指南](usage.md) - 详细的使用文档
-- [更新日志](CHANGELOG.md) - 版本说明和开发计划
+- [使用指南](Docs/usage.md) - 详细的使用文档
+- [更新日志](Docs/CHANGELOG.md) - 版本说明和开发计划
 <!-- COVER_END -->
 
 ## 最新更新
