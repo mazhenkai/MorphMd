@@ -19,8 +19,15 @@ from test_pdf import test_pdf_conversion
 from test_pdf_merge import test_pdf_merge
 from test_add_cover import test_add_cover
 from test_page_number import test_add_page_numbers
+from test_code_wrap import test_code_wrap_css, test_code_wrap_pdf_generated
+from test_pipeline import test_step1_merge, test_step2_add_toc_pages, test_step3_add_cover, test_step4_clean_metadata
 
-TESTS = [test_html_conversion, test_pdf_conversion, test_pdf_merge, test_add_cover, test_add_page_numbers]
+TESTS = [
+    test_html_conversion, test_pdf_conversion, test_pdf_merge,
+    test_add_cover, test_add_page_numbers,
+    test_code_wrap_css, test_code_wrap_pdf_generated,
+    test_step1_merge, test_step2_add_toc_pages, test_step3_add_cover, test_step4_clean_metadata,
+]
 
 if __name__ == "__main__":
     passed = failed = 0

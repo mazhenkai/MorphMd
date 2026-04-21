@@ -130,7 +130,8 @@ class MarkdownToPdfConverter:
                 border: 1px solid #ddd;
                 border-radius: 5px;
                 padding: 12px;
-                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
                 margin: 15px 0;
                 page-break-inside: avoid;
             }
@@ -366,9 +367,11 @@ class MarkdownToPdfConverter:
 
 
     def convert_merged(self, output_filename=None):
-        """将目录下所有 Markdown 文件合并为一个 PDF，包含目录页"""
-        md_files = sorted(self.input_dir.glob("*.md"))
+        """将目录下所有 Markdown 文件合并为一个 PDF。每个 section 单独渲染以精确记录页码，存入元数据供 add_toc_pages 使用。"""
+        import io
+        from pypdf import PdfWriter, PdfReader
 
+        md_files = sorted(self.input_dir.glob("*.md"))
         if not md_files:
             print(f"[WARNING] 在 {self.input_dir} 中没有找到Markdown文件")
             return False
@@ -378,69 +381,72 @@ class MarkdownToPdfConverter:
 
         print(f"找到 {len(md_files)} 个文件，合并为: {output_filename}.pdf")
 
-        # 生成目录 HTML
-        toc_items = "".join(
-            f'<li><a href="#section-{i}">{md_file.stem}</a></li>'
-            for i, md_file in enumerate(md_files)
-        )
-        toc_html = f"""
-        <div class="toc">
-            <h1>目录</h1>
-            <ol>{toc_items}</ol>
-        </div>
-        <div style="page-break-after: always"></div>
-        """
+        margin = {'top':'15mm','right':'15mm','bottom':'15mm','left':'15mm'}
 
-        # 合并所有 md 内容
-        sections = []
-        for i, md_file in enumerate(md_files):
-            print(f"  [{i+1}/{len(md_files)}] {md_file.name}")
-            with open(md_file, 'r', encoding='utf-8') as f:
-                md_content = f.read()
-            html_body = markdown2.markdown(
-                md_content,
-                extras=['tables', 'fenced-code-blocks', 'code-friendly', 'break-on-newline', 'header-ids']
-            )
-            sections.append(f'<div id="section-{i}" class="section">{html_body}</div>')
-
-        sections_html = '<div style="page-break-after: always"></div>'.join(sections)
-
-        toc_css = """
-        <style>
-            .toc { padding: 40px 0; }
-            .toc h1 { font-size: 28pt; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
-            .toc ol { font-size: 13pt; line-height: 2; }
-            .toc a { color: #3498db; text-decoration: none; }
-        </style>
-        """
-
-        full_html = f"""<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>{output_filename}</title>
-    {self.css_style}
-    {toc_css}
-</head>
-<body>
-    {toc_html}
-    {sections_html}
-</body>
-</html>"""
-
-        pdf_file = self.output_dir / f"{output_filename}.pdf"
+        # 先渲染简单目录页，数出占几页，作为内容页码的 offset
+        toc_items = "".join(f'<li>{md_file.stem}</li>' for md_file in md_files)
+        toc_css = "<style>.toc{padding:40px 0}.toc h1{font-size:28pt;border-bottom:3px solid #3498db;padding-bottom:10px}.toc ol{font-size:13pt;line-height:2}</style>"
+        toc_html = f"""<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">{self.css_style}{toc_css}</head>
+<body><div class="toc"><h1>目录</h1><ol>{toc_items}</ol></div></body></html>"""
 
         with sync_playwright() as p:
             browser = p.chromium.launch()
-            page = browser.new_page()
-            page.set_content(full_html, wait_until='networkidle')
-            page.pdf(
-                path=str(pdf_file),
-                format='A4',
-                margin={'top': '15mm', 'right': '15mm', 'bottom': '15mm', 'left': '15mm'},
-                print_background=True,
-            )
+            pg = browser.new_page()
+            pg.set_content(toc_html, wait_until='networkidle')
+            toc_bytes = pg.pdf(format='A4', margin=margin, print_background=True)
             browser.close()
+
+        toc_page_count = len(PdfReader(io.BytesIO(toc_bytes)).pages)
+
+        # 每个 section 单独渲染，记录起始页码
+        section_pdf_bytes = []
+        section_start_pages = {}
+        current_page = toc_page_count + 1
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            for i, md_file in enumerate(md_files):
+                print(f"  [{i+1}/{len(md_files)}] {md_file.name}")
+                with open(md_file, 'r', encoding='utf-8') as f:
+                    md_content = f.read()
+                html_body = markdown2.markdown(
+                    md_content,
+                    extras=['tables', 'fenced-code-blocks', 'code-friendly', 'break-on-newline', 'header-ids']
+                )
+                full_html = f"""<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">{self.css_style}</head>
+<body>{html_body}</body></html>"""
+                pg = browser.new_page()
+                pg.set_content(full_html, wait_until='networkidle')
+                pdf_bytes = pg.pdf(format='A4', margin=margin, print_background=True)
+                pg.close()
+                section_pdf_bytes.append(pdf_bytes)
+                section_start_pages[i] = current_page - toc_page_count  # 相对页码，从1开始
+                current_page += len(PdfReader(io.BytesIO(pdf_bytes)).pages)
+            browser.close()
+
+        # 拼合目录页 + 所有 section
+        writer = PdfWriter()
+        for page in PdfReader(io.BytesIO(toc_bytes)).pages:
+            writer.add_page(page)
+        for pdf_bytes in section_pdf_bytes:
+            for page in PdfReader(io.BytesIO(pdf_bytes)).pages:
+                writer.add_page(page)
+
+        # 写入元数据：文件名列表 + 精确页码
+        import json
+        writer.add_metadata({
+            '/MorphMdSections': '|'.join(f.stem for f in md_files),
+            '/MorphMdPages': json.dumps(section_start_pages),
+        })
+
+        pdf_file = self.output_dir / f"{output_filename}.pdf"
+        with open(pdf_file, 'wb') as f:
+            writer.write(f)
+
+        print(f"[OK] 合并完成: {pdf_file}")
+        return True
 
         print(f"[OK] 合并完成: {pdf_file}")
         return True

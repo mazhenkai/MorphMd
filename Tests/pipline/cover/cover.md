@@ -1,0 +1,16 @@
+<div style="text-align: center; padding: 120px 40px 80px 40px;">
+
+<p style="font-size: 13pt; color: #888; letter-spacing: 4px; margin-bottom: 60px;">{{副标题}}</p>
+
+<h1 style="font-size: 36pt; font-weight: bold; color: #2c3e50; letter-spacing: 2px; margin-bottom: 20px;">{{项目名称}}</h1>
+
+<h2 style="font-size: 22pt; font-weight: normal; color: #3498db; margin-bottom: 60px;">{{文档标题}}</h2>
+
+<hr style="border: none; border-top: 2px solid #3498db; width: 120px; margin: 0 auto 60px auto;">
+
+<table style="margin: 0 auto; font-size: 12pt; color: #555; border: none; width: auto;">
+<tr><td style="padding: 6px 20px; text-align: right; color: #888; border: none;">版本</td><td style="padding: 6px 20px; border: none;">{{版本}}</td></tr>
+<tr><td style="padding: 6px 20px; text-align: right; color: #888; border: none;">最后更新</td><td style="padding: 6px 20px; border: none;">{{最后更新}}</td></tr>
+</table>
+
+</div>

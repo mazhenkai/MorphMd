@@ -7,14 +7,15 @@ add_cover.py - 为已有 PDF 添加封面，可选加页码
 
 import argparse
 import sys
-import io
 from pathlib import Path
+from datetime import datetime
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 import markdown2
 from playwright.sync_api import sync_playwright
+from core.pdf_utils import merge_pdfs, add_page_numbers
 
 
 CSS = """
@@ -37,12 +38,14 @@ def md_to_pdf_bytes(md_path: Path) -> bytes:
     import json
     with open(md_path, 'r', encoding='utf-8') as f:
         content = f.read()
+    content = content.replace('{{最后更新}}', datetime.now().strftime('%Y-%m-%d %H:%M'))
     json_path = md_path.with_suffix('.json')
     if json_path.exists():
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         for key, value in data.items():
-            content = content.replace(f'{{{{{key}}}}}', str(value))
+            if key != '最后更新':
+                content = content.replace(f'{{{{{key}}}}}', str(value))
     html_body = markdown2.markdown(content, extras=['tables', 'fenced-code-blocks', 'header-ids'])
     full_html = f"<!DOCTYPE html><html lang='zh-CN'><head><meta charset='UTF-8'>{CSS}</head><body>{html_body}</body></html>"
     with sync_playwright() as p:
@@ -54,56 +57,26 @@ def md_to_pdf_bytes(md_path: Path) -> bytes:
     return pdf_bytes
 
 
-def merge_pdfs(cover_bytes: bytes, content_pdf: Path, output_pdf: Path):
-    from pypdf import PdfWriter, PdfReader
-    writer = PdfWriter()
-    for page in PdfReader(io.BytesIO(cover_bytes)).pages:
-        writer.add_page(page)
-    for page in PdfReader(str(content_pdf)).pages:
-        writer.add_page(page)
-    with open(output_pdf, 'wb') as f:
-        writer.write(f)
-
-
-def add_page_numbers(pdf_path: Path, skip_first: int = 1):
-    """给 PDF 每页加页码，跳过前 skip_first 页（封面）"""
-    from pypdf import PdfWriter, PdfReader
-    from reportlab.pdfgen import canvas
-
-    reader = PdfReader(str(pdf_path))
-    writer = PdfWriter()
-
-    for i, page in enumerate(reader.pages):
-        if i < skip_first:
-            writer.add_page(page)
-            continue
-        w = float(page.mediabox.width)
-        h = float(page.mediabox.height)
-        buf = io.BytesIO()
-        c = canvas.Canvas(buf, pagesize=(w, h))
-        c.setFont("Helvetica", 9)
-        c.setFillColorRGB(0.5, 0.5, 0.5)
-        c.drawCentredString(w / 2, 20, str(i - skip_first + 1))
-        c.save()
-        buf.seek(0)
-        page.merge_page(PdfReader(buf).pages[0])
-        writer.add_page(page)
-
-    with open(pdf_path, 'wb') as f:
-        writer.write(f)
-
-
 def main():
     parser = argparse.ArgumentParser(description='为 PDF 添加封面')
     parser.add_argument('cover_md', help='封面 md 文件路径（相对于项目根目录）')
     parser.add_argument('content_pdf', help='内容 PDF 文件路径（相对于项目根目录）')
     parser.add_argument('output_pdf', nargs='?', help='输出 PDF 路径')
     parser.add_argument('--page-number', '-p', action='store_true', help='添加页码（跳过封面页）')
+    parser.add_argument('--mode', '-m', choices=['overwrite', 'timestamp'], default='timestamp',
+                        help='输出模式: overwrite=覆盖原文件, timestamp=新文件带时间戳后缀（默认）')
     args = parser.parse_args()
 
     cover_md = ROOT / args.cover_md
     content_pdf = ROOT / args.content_pdf
-    output_pdf = ROOT / args.output_pdf if args.output_pdf else content_pdf.parent / f"{content_pdf.stem}_covered.pdf"
+
+    if args.output_pdf:
+        output_pdf = ROOT / args.output_pdf
+    elif args.mode == 'overwrite':
+        output_pdf = content_pdf
+    else:
+        ts = datetime.now().strftime('%Y%m%d_%H%M')
+        output_pdf = content_pdf.parent / f"{content_pdf.stem}_{ts}.pdf"
 
     if not cover_md.exists():
         print(f"[ERROR] 封面文件不存在: {cover_md}")

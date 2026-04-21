@@ -37,22 +37,40 @@ python Bin/convert.py Samples/test.md -f docx
 python Bin/convert.py Samples -f pdf
 ```
 
-### 合并为一个 PDF
+### 批量转换
 
 ```bash
-# 合并目录下所有 md 为一个 PDF
-python Bin/merge_convert.py Samples
+# 批量转换 Input/Samples 目录所有 .md 文件为 PDF
+python Bin/convert.py Samples -f pdf
 
-# 自定义输出文件名
-python Bin/merge_convert.py Samples --name 合并文档
+# 批量转换为 HTML
+python Bin/convert.py Samples -f html
 ```
 
-### 添加封面
+### 合并为一个 PDF（完整流程）
 
 ```bash
-# 为 PDF 添加封面（输出为 *_covered.pdf）
-python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Samples/Samples.pdf
+# 第一步：合并 md → PDF（含元数据）
+python Bin/merge_convert.py SelfRunningFiles/项目名/文档目录 --name 输出文件名
+
+# 第二步：重建带页码目录 + 底部页码
+python Bin/add_toc_pages.py Output/pdf/SelfRunningFiles/项目名/文档目录/输出文件名.pdf
+
+# 第三步：加封面（默认输出带时间戳新文件）
+python Bin/add_cover.py Template/Cover/封面.md Output/pdf/.../输出文件名.pdf
+
+# 第四步：清除内部元数据
+python Bin/clean_metadata.py Output/pdf/.../输出文件名.pdf
 ```
+
+**add_cover.py 参数说明：**
+- `--mode overwrite`：覆盖原文件
+- `--mode timestamp`（默认）：输出带 `_YYYYMMDD_HHmm` 后缀的新文件
+- `-p`：加底部页码（跳过封面页）
+
+**add_toc_pages.py 参数说明：**
+- `--toc-pages N`：目录页占几页（默认1）
+- `--skip-page-number`：不加底部页码
 
 ## 输出说明
 
@@ -85,3 +103,21 @@ PDF_MARGIN_LEFT=15
 ```
 
 更多配置请参考 `.env.example`
+
+## 测试
+
+```bash
+# 运行全部测试（11个）
+python Tests/run_all.py
+```
+
+| 测试文件 | 覆盖内容 |
+|----------|----------|
+| `test_html.py` | HTML 转换 |
+| `test_pdf.py` | PDF 单文件转换 |
+| `test_pdf_merge.py` | PDF 合并 |
+| `test_add_cover.py` | 封面添加 |
+| `test_page_number.py` | 底部页码 |
+| `test_code_wrap.py` | 长代码行换行修复 |
+| `test_pipeline.py` | 完整四步流程集成测试 |
+

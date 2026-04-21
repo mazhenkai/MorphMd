@@ -1,16 +1,9 @@
-MIT License
+Copyright (c) 2026 Zhenkai Ma <ma.zhenkai@foxmail.com>
 
-Copyright (c) 2026 [Zhenkai Ma ma.zhenkai@foxmail.com]
+This software is free for personal and non-commercial use.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Commercial use requires explicit written permission from the author.
+For commercial licensing inquiries, contact: ma.zhenkai@foxmail.com
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -19,3 +12,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+版权所有 (c) 2026 马振凯 <ma.zhenkai@foxmail.com>
+
+本软件可免费用于个人及非商业用途。
+
+商业使用须获得作者的明确书面授权。
+商业授权咨询请联系：ma.zhenkai@foxmail.com
+
+本软件按"现状"提供，不附带任何明示或暗示的保证，包括但不限于适销性、
+特定用途适用性及不侵权保证。在任何情况下，作者均不对因使用本软件而产生
+的任何索赔、损害或其他责任承担责任。

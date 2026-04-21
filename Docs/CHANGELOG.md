@@ -1,5 +1,26 @@
 # 更新日志
 
+## v0.2.2 (2026-04-21)
+
+#### 新功能
+- 新增 `Bin/add_toc_pages.py`：独立步骤，为合并 PDF 重建带页码目录并加底部页码
+- 新增 `Bin/clean_metadata.py`：清除 MorphMd 生成的内部元数据
+- 新增 `core/pdf_utils.py`：抽离通用 PDF 工具函数（merge_pdfs、add_page_numbers、find_section_pages）
+- `add_cover.py` 新增 `--mode` 参数（`overwrite` 覆盖 / `timestamp` 带时间戳新文件，默认 timestamp）
+- `add_cover.py` 封面 `{{最后更新}}` 自动取系统时间，无需手动维护 json
+
+#### 改进
+- `convert_merged` 改为逐 section 单独渲染，精确记录页码存入 PDF 元数据，目录页码准确
+- 修复 `pre` 块 CSS：`overflow-x:auto` 改为 `white-space:pre-wrap` + `word-break:break-all`，修复 PDF 长代码行不换行问题
+- `add_cover.py` 重构，复用 `core/pdf_utils`，去除重复代码
+
+#### 测试
+- 新增 `Tests/test_code_wrap.py`：验证长代码行换行修复
+- 新增 `Tests/test_pipeline.py`：完整四步流程集成测试
+- 新增 `Tests/pipline/` 测试 fixtures
+
+---
+
 ## v0.2.1 (2026-04-19)
 
 #### 新功能
