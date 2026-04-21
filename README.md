@@ -2,7 +2,7 @@
 
 将 Markdown 文件转换为 HTML、PDF 或 DOCX 格式，完美支持彩色 Emoji。
 
-📖 **[项目文档](Docs/cover.md)** | [使用指南](Docs/usage.md) | [示例](Docs/examples.md) | [更新日志](Docs/CHANGELOG.md)
+📖 **[项目文档](Docs/cover.md)** | [使用指南](Docs/usage.md) | [更新日志](Docs/CHANGELOG.md)
 
 <!-- COVER_START -->
 # 项目文档
@@ -24,7 +24,6 @@
 
 
 - [使用指南](usage.md) - 详细的使用文档
-- [示例](examples.md) - 使用示例
 - [更新日志](CHANGELOG.md) - 版本说明和开发计划
 <!-- COVER_END -->
 
@@ -104,34 +103,34 @@ python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Sample
 
 ```
 MorphMd/
-├── Bin/               # 入口脚本
-│   ├── convert.py     # 单文件/批量转换
+├── Bin/                 # 入口脚本
+│   ├── convert.py       # 单文件/批量转换
 │   ├── merge_convert.py # 合并多 md 为一个 PDF
-│   └── add_cover.py   # 添加封面
+│   ├── add_toc_pages.py # 重建带页码目录 + 底部页码
+│   ├── add_cover.py     # 添加封面
+│   └── clean_metadata.py # 清除内部元数据
 │
-├── Config/            # 配置文件
-│   ├── .env           # 环境配置（本地，不提交）
-│   ├── .env.example   # 配置示例
-│   └── settings.json  # 全局设置
+├── Config/              # 配置文件
+│   ├── .env             # 环境配置（本地，不提交）
+│   ├── .env.example     # 配置示例
+│   └── settings.json    # 全局设置
 │
-├── Input/             # 输入目录（放置待转换的 .md 文件）
-│   ├── Tests/
-│   └── Samples/
+├── Input/               # 输入目录（放置待转换的 .md 文件）
 │
-├── Output/            # 输出目录（按格式自动分类）
+├── Output/              # 输出目录（按格式自动分类）
 │   ├── html/
 │   ├── pdf/
 │   └── docx/
 │
-├── Template/          # 模板目录
-│   └── Cover/         # 封面模板
-│       └── Samples/   # 示例封面
+├── Template/            # 模板目录
+│   └── Cover/           # 封面模板
 │
-├── Tests/             # 测试代码
-├── Tmp/               # 临时文件
-├── Logs/              # 转换日志
-├── Docs/              # 项目文档
-└── core/              # 核心转换代码
+├── Scripts/             # 批处理脚本（组合 Bin/ 工具）
+├── Tests/               # 测试代码
+├── Tmp/                 # 临时文件
+├── Logs/                # 转换日志
+├── Docs/                # 项目文档
+└── core/                # 核心转换代码
 ```
 
 ## 支持格式
@@ -185,4 +184,6 @@ python Bin/add_cover.py Template/Cover/Samples/示例封面.md Output/pdf/Sample
 
 ## License
 
-MIT License - 详见 [LICENSE](LICENSE)
+个人及非商业用途免费使用，商业使用需获得作者授权。
+
+联系：ma.zhenkai@foxmail.com | 详见 [LICENSE](LICENSE)
