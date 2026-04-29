@@ -298,8 +298,14 @@ class MarkdownToPdfConverter:
                 browser = p.chromium.launch()
                 page = browser.new_page()
 
-                # 加载HTML内容
-                page.set_content(full_html, wait_until='networkidle')
+                # 写临时 HTML 文件，让 Chromium 以 file:// 加载，相对路径图片可正常解析
+                import tempfile
+                tmp_html = md_file.parent / "_tmp_preview.html"
+                tmp_html.write_text(full_html, encoding='utf-8')
+                try:
+                    page.goto(tmp_html.as_uri(), wait_until='networkidle')
+                finally:
+                    tmp_html.unlink(missing_ok=True)
 
                 # 生成PDF
                 page.pdf(
